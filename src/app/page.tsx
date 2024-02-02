@@ -1,95 +1,77 @@
-import Image from "next/image";
+'use client';
 import styles from "./page.module.css";
+import Button from "@mui/material/Button";
+import Container from "@mui/material/Container";
+import Grid from "@mui/material/Grid";
+import TextField from "@mui/material/TextField";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { styled } from "@mui/material/styles";
+import { useState } from "react";
 
 export default function Home() {
+
+  const [fileContents, setFileContents] = useState<string>("");
+
+  const VisuallyHiddenInput = styled("input")({
+    clip: "rect(0 0 0 0)",
+    clipPath: "inset(50%)",
+    height: 1,
+    overflow: "hidden",
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    whiteSpace: "nowrap",
+    width: 1,
+  });
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files) {
+      return;
+    }
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const text = e.target?.result;
+      console.log(text);
+      setFileContents(text as string)
+    };
+    reader.readAsText(file);
+  };
+
   return (
     <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
+      <Container>
+        <Grid container spacing={2}>
+          <Grid item xs={2}>
+            <Button
+              component="label"
+              variant="contained"
+              startIcon={<CloudUploadIcon />}
+            >
+              Upload file
+              <VisuallyHiddenInput type="file" accept=".md" onChange={handleFileChange}/>
+            </Button>
+          </Grid>
+          <Grid container item xs={10}>
+            <TextField
+              InputProps={{
+                readOnly: true,
+              }}
+              multiline
+              minRows={4}
+              margin="normal"
+              value={"code"}
+              label="Hello World"
+              fullWidth
             />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+            <Grid item xs={12}>
+              <Button variant="contained" color="primary">
+                Copy
+              </Button>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Container>
     </main>
   );
 }

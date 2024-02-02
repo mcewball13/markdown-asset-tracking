@@ -4,18 +4,24 @@ import fs from "fs";
 import path from "path";
 import OpenAi from "openai";
 import { MAIN_SYSTEM_PROMPT } from "./prompts";
+import { NextApiRequest, NextApiResponse } from "next";
+import { buildPrompt } from "./prompts/main-prompt";
 
 const openai = new OpenAi({ apiKey: process.env.OPENAI_API_KEY });
 
 type ImageLinkToken = Tokens.Image | Tokens.Link;
 
-export const parseMarkdown = () => {
+interface MarkdownData {
+  markdown: string;
+}
+
+export const parseMarkdown = (markdownData: MarkdownData) => {
   try {
     const filePath = path.join(process.cwd(), "test_markdown/README.md");
     const markdownFile = fs.readFileSync(filePath, "utf8");
     const imageLinkTokenList: ImageLinkToken[] = [];
-
-    const tokens = marked.lexer(markdownFile);
+    // console.log('markdownFile', markdownFile)
+    const tokens = marked.lexer(markdownData.markdown);
 
     const recursiveFindImageLink = (tokens: any) => {
       for (const token of tokens) {
@@ -29,8 +35,6 @@ export const parseMarkdown = () => {
       }
     };
     recursiveFindImageLink(tokens);
-    console.log(imageLinkTokenList);
-
     return imageLinkTokenList;
   } catch (error) {
     console.error(error);
@@ -38,20 +42,33 @@ export const parseMarkdown = () => {
   }
 };
 
-export async function GET() {
-  const verifiedTokens = parseMarkdown();
+export async function POST(req: Request, res: NextApiResponse) {
+  try {
+    const data = await req.json();
 
-  const chatCompletion = await openai.chat.completions.create({
-    messages: [
-      { role: "system", content: MAIN_SYSTEM_PROMPT },
-      { role: "user", content: JSON.stringify(verifiedTokens) },
-    ],
-    model: "gpt-3.5-turbo",
-  });
+    const verifiedTokens = parseMarkdown(data);
+    console.log("verifiedTokens", verifiedTokens);
 
-  for await (const message of chatCompletion.choices) {
-    console.log(message.message);
+    const chatCompletion = await openai.chat.completions.create({
+      messages: [
+        // { role: "system", content: MAIN_SYSTEM_PROMPT },
+        {
+          role: "user",
+          content: buildPrompt({
+            markdownContent: JSON.stringify(verifiedTokens),
+          }),
+        },
+      ],
+      model: "gpt-4-1106-preview",
+    });
+
+    for await (const message of chatCompletion.choices) {
+      console.log("response", message.message.content);
+    }
+
+    return NextResponse.json(chatCompletion.choices[0].message.content);
+  } catch (error) {
+    console.error(error);
+    return NextResponse.error();
   }
-
-  return NextResponse.json(verifiedTokens);
 }

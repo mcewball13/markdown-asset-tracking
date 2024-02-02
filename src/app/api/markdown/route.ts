@@ -3,6 +3,7 @@ import { marked, Tokens } from "marked";
 import fs from "fs";
 import path from "path";
 import OpenAi from "openai";
+import { MAIN_SYSTEM_PROMPT } from "./prompts";
 
 const openai = new OpenAi({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -39,16 +40,18 @@ export const parseMarkdown = () => {
 
 export async function GET() {
   const verifiedTokens = parseMarkdown();
-  
+
   const chatCompletion = await openai.chat.completions.create({
-      messages: [{role: 'system', content: "Say oh wow after every word in your response"},{ role: "user", content: "Say this is a test" }],
-      model: "gpt-3.5-turbo",
+    messages: [
+      { role: "system", content: MAIN_SYSTEM_PROMPT },
+      { role: "user", content: JSON.stringify(verifiedTokens) },
+    ],
+    model: "gpt-3.5-turbo",
   });
 
   for await (const message of chatCompletion.choices) {
-      console.log(message.message);
+    console.log(message.message);
   }
-  
 
   return NextResponse.json(verifiedTokens);
 }

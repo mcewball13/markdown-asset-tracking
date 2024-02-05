@@ -4,7 +4,7 @@ import fs from "fs";
 import path from "path";
 import OpenAi from "openai";
 import { MAIN_SYSTEM_PROMPT } from "./prompts";
-import { NextApiRequest, NextApiResponse } from "next";
+
 import { buildPrompt } from "./prompts/main-prompt";
 
 const openai = new OpenAi({ apiKey: process.env.OPENAI_API_KEY });
@@ -42,7 +42,7 @@ export const parseMarkdown = (markdownData: MarkdownData) => {
   }
 };
 
-export async function POST(req: Request, res: NextApiResponse) {
+export async function POST(req: Request, res: Response) {
   try {
     const data = await req.json();
 
@@ -59,7 +59,7 @@ export async function POST(req: Request, res: NextApiResponse) {
           }),
         },
       ],
-      model: "gpt-4-1106-preview",
+      model: "gpt-3.5-turbo-1106",
     });
 
     for await (const message of chatCompletion.choices) {

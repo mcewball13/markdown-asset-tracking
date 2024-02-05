@@ -14,7 +14,7 @@ Please format each entry as follows, using tabs to separate columns and ensuring
 
 Given this list of links and images in markdown, transform it into the format above, filling in the placeholders with the appropriate information. Here is a sample piece of data for reference:
 
-"Coding Boot Camp"	"6"	"Google Reference"	"Link/URL"	"14"	"Activity/Demo File"	"Handlebars.js Front-End Logic Activity"	"Google Search"	"Google"	"https://www.google.com"	"https://github.com/coding-boot-camp/fullstack-live/blob/main/02-Lesson-Plans/Part-Time/14-Week_MVC/01-Day_Handlebars/14.1-LESSON-PLAN.md"	"NA"	"". There are 14 columns here, so please ensure that each entry has 14 columns, with each piece of information correctly placed according to the column titles.
+"Coding Boot Camp"	"6"	"Google Reference"	"Link/URL"	"14"	"Activity/Demo File"	"Handlebars.js Front-End Logic Activity"	"Google Search"     "Google"	"https://www.google.com"	"https://github.com/coding-boot-camp/fullstack-live/blob/main/02-Lesson-Plans/Part-Time/14-Week_MVC/01-Day_Handlebars/14.1-LESSON-PLAN.md"	"NA"	"NA". There are 14 columns here, so please ensure that each entry has 14 columns, with each piece of information correctly placed according to the column titles.
 
 Please convert the following markdown content into the specified format, filling in as much information. Do not response with the column names. Only the data for you to alter that goes into the columns.:
 
